@@ -1,0 +1,275 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "House Rental Application API",
+    "version": "1.0.0",
+    "description": "REST API documentation for House Rental Application with user roles, authentication, house management, and booking flow."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Server"
+    }
+  ],
+  "tags": [
+    { "name": "Auth", "description": "User and Owner authentication" },
+    { "name": "Owner", "description": "Owner house management routes" },
+    { "name": "User", "description": "User house browsing and booking routes" }
+  ],
+  "paths": {
+    "/api/auth/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register new user or owner",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "role": { "type": "string", "enum": ["user", "owner"] }
+                },
+                "required": ["name", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created successfully" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login for user or owner",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful" },
+          "400": { "description": "Invalid credentials" }
+        }
+      }
+    },
+
+    "/api/owner/house": {
+      "post": {
+        "tags": ["Owner"],
+        "summary": "Owner creates a new house listing",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string" },
+                  "cost": { "type": "number" },
+                  "description": { "type": "string" },
+                  "location": { "type": "string" },
+                  "furnishing": { "type": "string" },
+                  "photos": { "type": "string", "format": "binary" }
+                },
+                "required": ["title", "cost", "location"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "House listing created" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+
+    "/api/owner/house/my": {
+      "get": {
+        "tags": ["Owner"],
+        "summary": "Get all houses posted by owner",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of houses posted by owner" }
+        }
+      }
+    },
+
+    "/api/owner/house/requests/{houseId}": {
+      "get": {
+        "tags": ["Owner"],
+        "summary": "Get all booking requests for a specific house",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "List of requests" },
+          "404": { "description": "House not found" }
+        }
+      }
+    },
+
+    "/api/owner/house/accept": {
+      "post": {
+        "tags": ["Owner"],
+        "summary": "Accept a user's house booking request",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "houseId": { "type": "string" },
+                  "userId": { "type": "string" }
+                },
+                "required": ["houseId", "userId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Booking accepted" }
+        }
+      }
+    },
+
+    "/api/owner/house/reject": {
+      "post": {
+        "tags": ["Owner"],
+        "summary": "Reject a user request",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "houseId": { "type": "string" },
+                  "userId": { "type": "string" }
+                },
+                "required": ["houseId", "userId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Booking rejected" }
+        }
+      }
+    },
+
+    "/api/user/houses": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get all available houses",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of houses" }
+        }
+      }
+    },
+
+    "/api/user/request": {
+      "post": {
+        "tags": ["User"],
+        "summary": "User requests a house",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "houseId": { "type": "string" }
+                },
+                "required": ["houseId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Request created" }
+        }
+      }
+    },
+
+    "/api/user/request/{houseId}": {
+      "delete": {
+        "tags": ["User"],
+        "summary": "User withdraws a request",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "houseId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Request withdrawn" }
+        }
+      }
+    },
+
+    "/api/user/myhouse": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get user's currently booked house",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Booked house returned" }
+        }
+      }
+    },
+
+    "/api/user/rejected": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get rejected houses for user",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Rejected list returned" }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
