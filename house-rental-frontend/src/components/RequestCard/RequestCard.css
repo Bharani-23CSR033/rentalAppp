@@ -1,0 +1,27 @@
+.request-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.request-left { display:flex; gap:12px; align-items:center;}
+.avatar {
+  width:48px; height:48px; border-radius:50%; background:#ddd; display:flex; align-items:center; justify-content:center; font-weight:700;
+}
+.small { font-size:13px; color:#444; }
+.muted { opacity:0.7; font-size:12px; }
+
+.request-actions { display:flex; gap:8px; align-items:center; }
+.status { padding:6px 10px; border-radius:12px; font-weight:600; text-transform:capitalize; }
+.status.pending { background:#ffeeba; color:#856404; }
+.status.accepted { background:#d4edda; color:#155724; }
+.status.rejected { background:#f8d7da; color:#721c24; }
+
+.accept, .reject {
+  padding:8px 12px; border-radius:8px; border:none; cursor:pointer;
+}
+.accept { background:#2ecc71; color:white; }
+.reject { background:#e74c3c; color:white; }

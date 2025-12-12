@@ -54,6 +54,16 @@ exports.updateHouse = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// get single house
+exports.getSingleHouse = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const house = await House.findById(id).populate('ownerId', 'name email').populate('requests', 'name email');
+    if (!house) return res.status(404).json({ message: 'House not found' });
+    res.json({ house });
+  } catch (err) { next(err); }
+};
+
 // delete house
 exports.deleteHouse = async (req, res, next) => {
   try {
@@ -64,7 +74,7 @@ exports.deleteHouse = async (req, res, next) => {
     if (!house.ownerId.equals(ownerId)) return res.status(403).json({ message: 'Forbidden' });
 
     await Request.updateMany({ houseId: house._id, status: 'pending' }, { status: 'withdrawn' }); // optional cleanup
-    await house.remove();
+    await House.deleteOne({ _id: id });
     res.json({ message: 'House deleted' });
   } catch (err) { next(err); }
 };
@@ -118,13 +128,16 @@ exports.acceptRequest = async (req, res, next) => {
       await session.commitTransaction();
       session.endSession();
 
-      res.json({ message: 'Accepted booking', houseId, userId });
+      res.json({ message: 'Accepted booking', house: { _id: houseId }, user: { _id: userId } });
     } catch (err) {
       await session.abortTransaction();
       session.endSession();
       throw err;
     }
-  } catch (err) { next(err); }
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ message: err.message });
+    next(err);
+  }
 };
 
 // reject request

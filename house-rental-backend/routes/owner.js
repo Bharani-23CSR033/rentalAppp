@@ -45,6 +45,12 @@ router.put(
   ownerController.updateHouse
 );
 
+// Get my houses
+router.get('/house', ownerController.getMyHouses);
+
+// Get single house
+router.get('/house/:id', ownerController.getSingleHouse);
+
 // Get requests for a house
 router.get('/house/requests/:houseId', ownerController.getRequests);
 

@@ -1,0 +1,47 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Smooth fade animation */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Glass UI */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+/* Mobile responsive padding */
+.container {
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+}
+/* Buttons & micro animations */
+button { transition: transform .15s ease, opacity .15s ease; }
+button:active { transform: scale(.99); }
+
+/* Containers */
+.container { padding: 20px; max-width:1200px; margin: 24px auto; }
+
+/* Card hover */
+.glass { transition: transform .2s ease, box-shadow .2s ease; }
+.glass:hover { transform: translateY(-4px); }
+
+/* layout for lists */
+.list-grid { display:grid; gap:18px; grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) { .list-grid { grid-template-columns: 1fr; } }
